@@ -62,7 +62,7 @@ class HFImageDataset(Dataset):
 # Реєстр підтримуваних датасетів: hf_name → конфіг
 DATASET_CONFIGS = {
     "cifar10": {
-        "hf_name": "cifar10",
+        "hf_name": "uoft-cs/cifar10",
         "image_col": "img",
         "label_col": "label",
         "in_channels": 3,
@@ -70,7 +70,7 @@ DATASET_CONFIGS = {
         "image_size": 32,
     },
     "cifar100": {
-        "hf_name": "cifar100",
+        "hf_name": "uoft-cs/cifar100",
         "image_col": "img",
         "label_col": "fine_label",  # CIFAR-100 має fine та coarse мітки
         "in_channels": 3,
@@ -78,7 +78,7 @@ DATASET_CONFIGS = {
         "image_size": 32,
     },
     "mnist": {
-        "hf_name": "mnist",
+        "hf_name": "ylecun/mnist",
         "image_col": "image",
         "label_col": "label",
         "in_channels": 1,
@@ -94,7 +94,7 @@ DATASET_CONFIGS = {
         "image_size": 64,
     },
     "fashion_mnist": {
-        "hf_name": "fashion_mnist",
+        "hf_name": "zalando-datasets/fashion_mnist",
         "image_col": "image",
         "label_col": "label",
         "in_channels": 1,
