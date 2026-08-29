@@ -11,6 +11,9 @@ whatever that detector flags.
 - **Images** — defense against data-poisoning and backdoor attacks in training data
 - **Text** — defense against prompt injection in user input
 
+**On CIFAR-10 the defense drops the backdoor attack success rate from 97.89% to 1.54%,
+for 1.31 points of clean accuracy.** Full numbers and how to reproduce them: [Results](#results).
+
 **Live demo and API:** [huggingface.co/spaces/Zonda001/poison-defense](https://huggingface.co/spaces/Zonda001/poison-defense)
 **Models:** [poison-defense-cifar10](https://huggingface.co/Zonda001/poison-defense-cifar10) ·
 [poison-defense-text](https://huggingface.co/Zonda001/poison-defense-text)
@@ -104,12 +107,39 @@ client = Client("Zonda001/poison-defense")
 Training setup: CIFAR-10, poison ratio 0.3, detector 5 epochs, classifier 15 epochs,
 batch 256, lr 0.001.
 
-## Honest limitation
+## Results
 
-The before/after numbers are **not published yet** — clean accuracy and backdoor attack
-success rate for baseline vs. protected. The training script prints them; they have not
-been recorded in the model card. Until they are, treat the defense as demonstrated but
-not quantified.
+CIFAR-10, poison ratio 0.3, backdoor trigger 4×4 in the corner, target class 0. Both
+classifiers are the same ResNet-14 trained on the same poisoned data; the only difference
+is that one weights each sample's loss by the detector's trust score and the other does not.
+
+| Metric | Baseline | Protected | |
+|---|---|---|---|
+| Clean accuracy ↑ | 82.22% | 80.91% | −1.31 pp |
+| Backdoor ASR ↓ | 97.89% | **1.54%** | **−96.35 pp** |
+
+*ASR — attack success rate: the share of non-target test images that get classified as the
+target class once the trigger is stamped on them. Lower is better.*
+
+Read it this way: without a defense the backdoor works essentially every time it is tried —
+97.89%. With the defense it works 1.5 times in a hundred, and the model gives up 1.31 points
+of ordinary accuracy for that. During training the separation is visible directly: mean
+trust weight is 0.19 on poisoned samples against 0.73 on clean ones.
+
+### Reproducing
+
+```bash
+python train.py --dataset cifar10 --epochs_detector 5 --epochs_classifier 15                 --batch_size 256 --poison_ratio 0.3 --lr 0.001 --seed 42
+```
+
+Roughly 9 minutes on an RTX 5070 Ti (detector 9.4 s/epoch, each classifier ~13.5 s/epoch).
+`eval_only.py` re-scores saved checkpoints without retraining.
+
+### What these numbers are not
+
+A single run at seed 42 — no variance across seeds, and no comparison against published
+defenses. The detector is trained on the same four attack families it is then tested on, so
+this measures defense against *known* attack types, not generalisation to unseen ones.
 
 ## License
 

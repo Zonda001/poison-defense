@@ -16,6 +16,7 @@
 
 import argparse
 import os
+import sys
 import time
 from typing import Dict, Tuple
 
@@ -258,6 +259,13 @@ def evaluate_backdoor(
 # MAIN
 # =============================================================================
 def main():
+    # Вивід іде в UTF-8 незалежно від кодової сторінки Windows: інакше фінальна
+    # таблиця Фази 3 падає на стрілках ↑/↓ у cp1251 — після всього тренування,
+    # рівно на друку метрик, і числа втрачаються разом із процесом.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--dataset", type=str, default="cifar10",
