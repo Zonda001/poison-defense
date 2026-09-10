@@ -76,6 +76,15 @@ class Detector(nn.Module):
         self.register_buffer("memory_embeds", torch.zeros(0, embed_dim))
         self.register_buffer("memory_attack_ids", torch.zeros(0, dtype=torch.long))
 
+    def _load_from_state_dict(self, state_dict, prefix, *args, **kwargs):
+        """Ресайзимо buffers під форму з checkpoint перед load."""
+        for buf_name in ["memory_embeds", "memory_attack_ids"]:
+            key = prefix + buf_name
+            if key in state_dict:
+                # Просто замінюємо buffer на тензор з checkpoint
+                setattr(self, buf_name, state_dict[key].clone())
+        return super()._load_from_state_dict(state_dict, prefix, *args, **kwargs)
+
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         embed = self.encoder(x)
         embed_normalized = F.normalize(embed, dim=-1)

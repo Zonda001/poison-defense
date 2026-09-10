@@ -74,7 +74,7 @@ print(f"safe: {probs[0]:.3f}  poisoned: {probs[1]:.3f}")
 
 ## Immunity as a service
 
-The Space is not only a demo — it exposes five endpoints, so another project can borrow the
+The Space is not only a demo — it exposes seven endpoints, so another project can borrow the
 defense without training anything:
 
 | Endpoint | What it gives back |
@@ -84,12 +84,26 @@ defense without training anything:
 | `/trust_weights` | per-sample weights you can drop straight into your own loss |
 | `/generate_vaccine` | labelled poisoned samples, to harden your own model |
 | `/classify_protected` | classification through the protected model |
+| `/scan_text` | the same question for a piece of text (prompt injection) |
+| `/batch_scan_text` | the same over `.txt`, `.jsonl`, `.csv`, `.docx`, `.xlsx`, `.pdf` files |
 
 Full request/response documentation with examples: [`poison_defense/API.md`](poison_defense/API.md).
 
+### Access
+
+Two ways in, on purpose.
+
+**Free tier, no key.** The first tab of the Space runs the text and image detectors for
+anyone, capped at 20 requests per hour per IP. Nothing to sign up for; open it and try it.
+
+**Full access, with a key.** The seven endpoints above take an API key as their first
+argument, and have no rate limit. The key lives in the Space secret `VACCINATE_API_KEY`.
+
 ```python
-from gradio_client import Client
+from gradio_client import Client, handle_file
+
 client = Client("Zonda001/poison-defense")
+result = client.predict("YOUR_API_KEY", handle_file("image.jpg"), api_name="/scan")
 ```
 
 ## Repository
