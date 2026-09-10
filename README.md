@@ -87,7 +87,8 @@ defense without training anything:
 | `/scan_text` | the same question for a piece of text (prompt injection) |
 | `/batch_scan_text` | the same over `.txt`, `.jsonl`, `.csv`, `.docx`, `.xlsx`, `.pdf` files |
 
-Full request/response documentation with examples: [`poison_defense/API.md`](poison_defense/API.md).
+Full request/response documentation with examples: [`API.md`](API.md) — note it still
+describes the five image endpoints only, and predates the API key.
 
 ### Access
 
